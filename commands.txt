@@ -1,0 +1,58 @@
+# run the BeijingPM25Quality 
+python src/main.py --output_dir /home/xu/dev/research/mvts_transformer/experiments --comment "regression from Scratch" --name BeijingPM25Quality_fromScratch_Regression --records_file Regression_records.xls --data_dir ./data/Regression/BeijingPM25Quality --data_class tsra --pattern TRAIN --val_pattern TEST --epochs 500 --lr 0.001 --optimizer RAdam  --pos_encoding learnable --task regression
+
+
+
+python src/main.py --output_dir /home/xu/dev/research/mvts_transformer/experiments --comment "regression from Scratch" 
+--name Covid3Month_fromScratch_Regression --records_file Regression_records.xls --data_dir ./data/Regression/Covid3Month 
+--data_class tsra --pattern TRAIN --val_pattern TEST --epochs 100 --lr 0.001 --optimizer RAdam  --pos_encoding learnable --task regression
+
+
+python src/main.py --output_dir experiments --comment "pretraining through imputation" --name BeijingPM25Quality_pretrained --records_file Imputation_records.xls --data_dir ./data/Regression/BeijingPM25Quality --data_class tsra --pattern TRAIN --val_ratio 0.2 --epochs 700 --lr 0.001 --optimizer RAdam --batch_size 128 --pos_encoding learnable --d_model 128
+
+
+
+python src/main.py --output_dir experiments --comment "finetune for classification" --name SpokenArabicDigits_finetuned 
+--records_file Classification_records.xls --data_dir /path/to/Datasets/Classification/SpokenArabicDigits/ --data_class tsra 
+--pattern TRAIN --val_pattern TEST --epochs 100 --lr 0.001 --optimizer RAdam --batch_size 128 --pos_encoding learnable 
+--d_model 64 --load_model path/to/SpokenArabicDigits_pretrained/checkpoints/model_best.pth --task classification --change_output --key_metric accuracy
+
+
+python src/main.py --output_dir experiments --comment "finetune for classification" --name SpokenArabicDigits_finetuned 
+--records_file Classification_records.xls --data_dir /path/to/Datasets/Classification/SpokenArabicDigits/ --data_class tsra 
+--pattern TRAIN --val_pattern TEST --epochs 100 --lr 0.001 --optimizer RAdam --batch_size 128 --pos_encoding learnable --d_model 64 
+--load_model path/to/SpokenArabicDigits_pretrained/checkpoints/model_best.pth 
+--task classification --change_output --key_metric accuracy
+
+
+
+
+
+python src/main.py --output_dir experiments --comment "pretraining through imputation" --name $1_pretrained --records_file Imputation_records.xls --data_dir /path/to/$1/ --data_class tsra --pattern TRAIN --val_ratio 0.2 --epochs 700 --lr 0.001 --optimizer RAdam --batch_size 32 --pos_encoding learnable --d_model 128
+
+# pretrain models
+python src/main.py --output_dir experiments --comment "pretraining through imputation" --name SpokenArabicDigits_pretrained --records_file Imputation_records.xls --data_dir ./data/Multivariate_ts/SpokenArabicDigits --data_class tsra --pattern TRAIN --val_ratio 0.2 --epochs 10 --lr 0.001 --optimizer RAdam --batch_size 32 --pos_encoding learnable --d_model 1208
+
+# -----------------------------------------
+# pretrain PM25
+python src/main.py --output_dir experiments --comment "pretraining through imputation" --name BeijingPM25Quality_pretrained --records_file Imputation_records.xls --data_dir ./data/Regression/BeijingPM25Quality --data_class tsra --pattern TRAIN --val_ratio 0.2 --epochs 500 --lr 0.001 --optimizer RAdam --batch_size 32 --pos_encoding learnable --d_model 128
+
+# finetune
+python src/main.py --output_dir experiments --comment "finetune for regression" --name BeijingPM25Quality_finetuned --records_file Regression_records.xls --data_dir ./data/Regression/BeijingPM25Quality --data_class tsra --pattern TRAIN --val_pattern TEST  --epochs 200 --lr 0.001 --optimizer RAdam --pos_encoding learnable --d_model 128 --load_model /home/xu/dev/research/mvts_transformer/experiments/BeijingPM25Quality_pretrained_2022-10-31_23-16-13_rLP/checkpoints/model_best.pth --task regression --change_output --batch_size 128
+
+
+# pretrain 
+python src/main.py --output_dir experiments --comment "pretraining through imputation" --name $1_pretrained 
+--records_file Imputation_records.xls --data_dir ./data/Multivariate_ts/Heartbeat --data_class tsra --pattern TRAIN --val_ratio 0.2 
+--epochs 700 --lr 0.001 --optimizer RAdam --batch_size 32 --pos_encoding learnable --d_model 128
+
+# Heartbeat train from scratch 400 epochs
+python src/main.py --output_dir experiments --comment "classification from Scratch" --name Heartbeat_fromScratch --records_file Classification_records.xls --data_dir ./data/Classification/Heartbeat/ --data_class tsra --pattern TRAIN --val_pattern TEST --epochs 400 --lr 0.001 --optimizer RAdam  --pos_encoding learnable  --task classification  --key_metric accuracy
+
+# pretrain
+python src/main.py --output_dir experiments --comment "pretraining Heartbeat through imputation" --name Heartbeat_pretrained --records_file Imputation_records.xls --data_dir ./data/Classification/Heartbeat/ --data_class tsra --pattern TRAIN --val_ratio 0.2 --epochs 500 --lr 0.001 --optimizer RAdam --batch_size 32 --pos_encoding learnable --d_model 128
+
+# finetune
+python src/main.py --output_dir experiments --comment "finetune for classification" --name Heartbeat_finetuned --records_file Classification_records.xls --data_dir ./data/Classification/Heartbeat/ --data_class tsra --pattern TRAIN --val_pattern TEST  --epochs 200 --lr 0.001 --optimizer RAdam --pos_encoding learnable --d_model 128 --load_model /home/xu/dev/research/mvts_transformer/experiments/Heartbeat_pretrained_2022-11-01_21-20-11_MFi/checkpoints/model_best.pth --task classification --change_output --batch_size 128 --key_metric accuracy
+
+

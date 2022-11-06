@@ -1,0 +1,85 @@
+Running:
+src/main.py --output_dir experiments --comment classification from Scratch --name Heartbeat_fromScratch --records_file Classification_records.xls --data_dir ./data/Classification/Heartbeat/ --data_class tsra --pattern TRAIN --val_pattern TEST --epochs 1 --lr 0.001 --optimizer RAdam --pos_encoding learnable --task classification --key_metric accuracy
+
+Using device: cuda
+Loading and preprocessing data ...
+204 samples may be used for training
+205 samples will be used for validation
+0 samples will be used for testing
+Creating model ...
+Model:
+TSTransformerEncoderClassiregressor(
+  (project_inp): Linear(in_features=61, out_features=64, bias=True)
+  (pos_enc): LearnablePositionalEncoding(
+    (dropout): Dropout(p=0.1, inplace=False)
+  )
+  (transformer_encoder): TransformerEncoder(
+    (layers): ModuleList(
+      (0): TransformerBatchNormEncoderLayer(
+        (self_attn): MultiheadAttention(
+          (out_proj): NonDynamicallyQuantizableLinear(in_features=64, out_features=64, bias=True)
+        )
+        (linear1): Linear(in_features=64, out_features=256, bias=True)
+        (dropout): Dropout(p=0.1, inplace=False)
+        (linear2): Linear(in_features=256, out_features=64, bias=True)
+        (norm1): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (norm2): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (dropout1): Dropout(p=0.1, inplace=False)
+        (dropout2): Dropout(p=0.1, inplace=False)
+      )
+      (1): TransformerBatchNormEncoderLayer(
+        (self_attn): MultiheadAttention(
+          (out_proj): NonDynamicallyQuantizableLinear(in_features=64, out_features=64, bias=True)
+        )
+        (linear1): Linear(in_features=64, out_features=256, bias=True)
+        (dropout): Dropout(p=0.1, inplace=False)
+        (linear2): Linear(in_features=256, out_features=64, bias=True)
+        (norm1): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (norm2): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (dropout1): Dropout(p=0.1, inplace=False)
+        (dropout2): Dropout(p=0.1, inplace=False)
+      )
+      (2): TransformerBatchNormEncoderLayer(
+        (self_attn): MultiheadAttention(
+          (out_proj): NonDynamicallyQuantizableLinear(in_features=64, out_features=64, bias=True)
+        )
+        (linear1): Linear(in_features=64, out_features=256, bias=True)
+        (dropout): Dropout(p=0.1, inplace=False)
+        (linear2): Linear(in_features=256, out_features=64, bias=True)
+        (norm1): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (norm2): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (dropout1): Dropout(p=0.1, inplace=False)
+        (dropout2): Dropout(p=0.1, inplace=False)
+      )
+    )
+  )
+  (dropout1): Dropout(p=0.1, inplace=False)
+  (output_layer): Linear(in_features=25920, out_features=2, bias=True)
+)
+Total number of parameters: 231682
+Trainable parameters: 231682
+Evaluating on validation set ...
+Validation runtime: 0.0 hours, 0.0 minutes, 0.5708110332489014 seconds
+
+Avg val. time: 0.0 hours, 0.0 minutes, 0.5708110332489014 seconds
+Avg batch val. time: 0.14270275831222534 seconds
+Avg sample val. time: 0.002784444064628787 seconds
+Epoch 0 Validation Summary: epoch: 0.000000 | loss: 5.533874 | accuracy: 0.292683 | precision: 0.485078 | AUROC: 0.564782 | AUPRC: 0.364966 | 
+Starting training...
+Epoch 1 Training Summary: epoch: 1.000000 | loss: 0.719132 | 
+Epoch runtime: 0.0 hours, 0.0 minutes, 0.17736339569091797 seconds
+
+Avg epoch train. time: 0.0 hours, 0.0 minutes, 0.17736339569091797 seconds
+Avg batch train. time: 0.04434084892272949 seconds
+Avg sample train. time: 0.0008694284102495979 seconds
+Evaluating on validation set ...
+Validation runtime: 0.0 hours, 0.0 minutes, 0.060715675354003906 seconds
+
+Avg val. time: 0.0 hours, 0.0 minutes, 0.31576335430145264 seconds
+Avg batch val. time: 0.07894083857536316 seconds
+Avg sample val. time: 0.0015403090453729397 seconds
+Epoch 1 Validation Summary: epoch: 1.000000 | loss: 0.700095 | accuracy: 0.595122 | precision: 0.622165 | AUROC: 0.539118 | AUPRC: 0.334082 | 
+Best accuracy was 0.5951219512195122. Other metrics: OrderedDict([('epoch', 1), ('loss', 0.7000950324826124), ('accuracy', 0.5951219512195122), ('precision', 0.6221654407020261), ('AUROC', 0.5391180654338549), ('AUPRC', 0.33408215843146766)])
+All Done!
+Total runtime: 0.0 hours, 0.0 minutes, 5.4259021282196045 seconds
+

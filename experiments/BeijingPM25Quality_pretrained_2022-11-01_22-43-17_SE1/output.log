@@ -1,0 +1,85 @@
+Running:
+src/main.py --output_dir experiments --comment pretraining through imputation --name BeijingPM25Quality_pretrained --records_file Imputation_records.xls --data_dir ./data/Regression/BeijingPM25Quality --data_class tsra --pattern TRAIN --val_ratio 0.2 --epochs 1 --lr 0.001 --optimizer RAdam --batch_size 32 --pos_encoding learnable --d_model 128
+
+Using device: cuda
+Loading and preprocessing data ...
+9534 samples may be used for training
+2384 samples will be used for validation
+0 samples will be used for testing
+Creating model ...
+Model:
+TSTransformerEncoder(
+  (project_inp): Linear(in_features=9, out_features=128, bias=True)
+  (pos_enc): LearnablePositionalEncoding(
+    (dropout): Dropout(p=0.1, inplace=False)
+  )
+  (transformer_encoder): TransformerEncoder(
+    (layers): ModuleList(
+      (0): TransformerBatchNormEncoderLayer(
+        (self_attn): MultiheadAttention(
+          (out_proj): NonDynamicallyQuantizableLinear(in_features=128, out_features=128, bias=True)
+        )
+        (linear1): Linear(in_features=128, out_features=256, bias=True)
+        (dropout): Dropout(p=0.1, inplace=False)
+        (linear2): Linear(in_features=256, out_features=128, bias=True)
+        (norm1): BatchNorm1d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (norm2): BatchNorm1d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (dropout1): Dropout(p=0.1, inplace=False)
+        (dropout2): Dropout(p=0.1, inplace=False)
+      )
+      (1): TransformerBatchNormEncoderLayer(
+        (self_attn): MultiheadAttention(
+          (out_proj): NonDynamicallyQuantizableLinear(in_features=128, out_features=128, bias=True)
+        )
+        (linear1): Linear(in_features=128, out_features=256, bias=True)
+        (dropout): Dropout(p=0.1, inplace=False)
+        (linear2): Linear(in_features=256, out_features=128, bias=True)
+        (norm1): BatchNorm1d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (norm2): BatchNorm1d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (dropout1): Dropout(p=0.1, inplace=False)
+        (dropout2): Dropout(p=0.1, inplace=False)
+      )
+      (2): TransformerBatchNormEncoderLayer(
+        (self_attn): MultiheadAttention(
+          (out_proj): NonDynamicallyQuantizableLinear(in_features=128, out_features=128, bias=True)
+        )
+        (linear1): Linear(in_features=128, out_features=256, bias=True)
+        (dropout): Dropout(p=0.1, inplace=False)
+        (linear2): Linear(in_features=256, out_features=128, bias=True)
+        (norm1): BatchNorm1d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (norm2): BatchNorm1d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (dropout1): Dropout(p=0.1, inplace=False)
+        (dropout2): Dropout(p=0.1, inplace=False)
+      )
+    )
+  )
+  (output_layer): Linear(in_features=128, out_features=9, bias=True)
+  (dropout1): Dropout(p=0.1, inplace=False)
+)
+Total number of parameters: 402953
+Trainable parameters: 402953
+Evaluating on validation set ...
+Validation runtime: 0.0 hours, 0.0 minutes, 0.870945930480957 seconds
+
+Avg val. time: 0.0 hours, 0.0 minutes, 0.870945930480957 seconds
+Avg batch val. time: 0.01161261240641276 seconds
+Avg sample val. time: 0.0003653296688259048 seconds
+Epoch 0 Validation Summary: epoch: 0.000000 | loss: 27.683267 | 
+Starting training...
+Epoch 1 Training Summary: epoch: 1.000000 | loss: 0.522797 | 
+Epoch runtime: 0.0 hours, 0.0 minutes, 3.002589225769043 seconds
+
+Avg epoch train. time: 0.0 hours, 0.0 minutes, 3.002589225769043 seconds
+Avg batch train. time: 0.010075802771037057 seconds
+Avg sample train. time: 0.0003149348883751881 seconds
+Evaluating on validation set ...
+Validation runtime: 0.0 hours, 0.0 minutes, 0.3651463985443115 seconds
+
+Avg val. time: 0.0 hours, 0.0 minutes, 0.6180461645126343 seconds
+Avg batch val. time: 0.008240615526835124 seconds
+Avg sample val. time: 0.000259247552228454 seconds
+Epoch 1 Validation Summary: epoch: 1.000000 | loss: 0.325638 | 
+Best loss was 0.3256375037032673. Other metrics: OrderedDict([('epoch', 1), ('loss', 0.3256375037032673)])
+All Done!
+Total runtime: 0.0 hours, 0.0 minutes, 32.408942461013794 seconds
+
