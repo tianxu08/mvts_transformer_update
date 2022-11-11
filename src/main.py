@@ -140,7 +140,7 @@ def main(config):
             test_data.feature_df.loc[test_indices] = normalizer.normalize(test_data.feature_df.loc[test_indices])
 
     print('>>>>> my_data: ', my_data)
-    
+
     # Create model
     logger.info("Creating model ...")
     model = model_factory(config, my_data)
@@ -205,6 +205,7 @@ def main(config):
     # Initialize data generators
     dataset_class, collate_fn, runner_class = pipeline_factory(config)
     val_dataset = dataset_class(val_data, val_indices)
+
 
     val_loader = DataLoader(dataset=val_dataset,
                             batch_size=config['batch_size'],
