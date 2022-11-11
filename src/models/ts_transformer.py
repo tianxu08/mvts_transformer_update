@@ -213,7 +213,7 @@ class TransformerBatchNormEncoderLayer(nn.modules.Module):
         """
         src2 = self.self_attn(src, src, src, attn_mask=src_mask,
                               key_padding_mask=src_key_padding_mask)[0]
-        src = src + self.dropout1(src2)  # (seq_len, batch_size, d_model)
+        src = src + self.dropout1(src2)  # (seq_len, batch_size, d_model) # residual
         src = src.permute(1, 2, 0)  # (batch_size, d_model, seq_len)
         # src = src.reshape([src.shape[0], -1])  # (batch_size, seq_length * d_model)
         src = self.norm1(src)
@@ -228,8 +228,18 @@ class TransformerBatchNormEncoderLayer(nn.modules.Module):
 
 class TSTransformerEncoder(nn.Module):
 
-    def __init__(self, feat_dim, max_len, d_model, n_heads, num_layers, dim_feedforward, dropout=0.1,
-                 pos_encoding='fixed', activation='gelu', norm='BatchNorm', freeze=False):
+    def __init__(self, 
+                 feat_dim, 
+                 max_len, 
+                 d_model, 
+                 n_heads, 
+                 num_layers, 
+                 dim_feedforward, 
+                 dropout=0.1,
+                 pos_encoding='fixed', 
+                 activation='gelu', 
+                 norm='BatchNorm', 
+                 freeze=False):
         super(TSTransformerEncoder, self).__init__()
 
         self.max_len = max_len
@@ -237,7 +247,9 @@ class TSTransformerEncoder(nn.Module):
         self.n_heads = n_heads
 
         self.project_inp = nn.Linear(feat_dim, d_model)
-        self.pos_enc = get_pos_encoder(pos_encoding)(d_model, dropout=dropout*(1.0 - freeze), max_len=max_len)
+        self.pos_enc = get_pos_encoder(pos_encoding)(d_model, 
+                                                    dropout=dropout*(1.0 - freeze), 
+                                                    max_len=max_len)
 
         if norm == 'LayerNorm':
             encoder_layer = TransformerEncoderLayer(d_model, self.n_heads, dim_feedforward, dropout*(1.0 - freeze), activation=activation)
@@ -269,13 +281,17 @@ class TSTransformerEncoder(nn.Module):
         # print('>>>>>> 1', X.shape)
         inp = X.permute(1, 0, 2)
         # print('>>>>>> 2', inp.shape)
-        inp = self.project_inp(inp) * math.sqrt(
-            self.d_model)  # [seq_length, batch_size, d_model] project input vectors to d_model dimensional space
+        inp = self.project_inp(inp) * math.sqrt(self.d_model)  
+        # [seq_length, batch_size, d_model] project input vectors to d_model dimensional space
         inp = self.pos_enc(inp)  # add positional encoding
         # NOTE: logic for padding masks is reversed to comply with definition 
         # in MultiHeadAttention, TransformerEncoderLayer
-        output = self.transformer_encoder(inp, src_key_padding_mask=~padding_masks)  # (seq_length, batch_size, d_model)
-        output = self.act(output)  # the output transformer encoder/decoder embeddings don't include non-linearity
+        output = self.transformer_encoder(inp, src_key_padding_mask=~padding_masks)  
+        # (seq_length, batch_size, d_model)
+        
+        output = self.act(output)  
+        # the output transformer encoder/decoder embeddings don't include non-linearity
+        
         output = output.permute(1, 0, 2)  # (batch_size, seq_length, d_model)
         output = self.dropout1(output)
         # Most probably defining a Linear(d_model,feat_dim) vectorizes the operation over (seq_length, batch_size).
