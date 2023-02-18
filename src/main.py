@@ -61,6 +61,16 @@ def main(config):
     logger.info("Loading and preprocessing data ...")
     data_class = data_factory[config['data_class']]
     my_data = data_class(config['data_dir'], pattern=config['pattern'], n_proc=config['n_proc'], limit_size=config['limit_size'], config=config)
+
+    # print('data_class: ', config['data_class'], config['pattern'])
+    # print('... my_data: ', type(my_data), my_data.config)
+    # print('>>> all_df: ', my_data.all_df.shape, 'feature_df', my_data.feature_df.shape,
+    #         'all_ids', my_data.all_IDs.shape, 'label_df', my_data.labels_df.shape,
+    #         'self.feature_df', my_data.feature_df.shape,
+    #         'self.feature_names', my_data.feature_names 
+    # )
+
+    # print('\n\n\n.......')
     feat_dim = my_data.feature_df.shape[1]  # dimensionality of data features
     if config['task'] == 'classification':
         validation_method = 'StratifiedShuffleSplit'
@@ -74,6 +84,12 @@ def main(config):
     test_indices = None  # will be converted to empty list in `split_dataset`, if also test_set_ratio == 0
     val_data = my_data
     val_indices = []
+    # print('!!!!!test_pattern: \n', 
+    # config['test_pattern'], 
+    # config['test_from'], 
+    # config['val_pattern'],
+    # config['val_ratio'])
+    # print('###################')
     if config['test_pattern']:  # used if test data come from different files / file patterns
         test_data = data_class(config['data_dir'], pattern=config['test_pattern'], n_proc=-1, config=config)
         test_indices = test_data.all_IDs
@@ -87,6 +103,7 @@ def main(config):
     if config['val_pattern']:  # used if val data come from different files / file patterns
         val_data = data_class(config['data_dir'], pattern=config['val_pattern'], n_proc=-1, config=config)
         val_indices = val_data.all_IDs
+        print('>>>> val_indices: ', len(val_indices), val_indices)
 
     # Note: currently a validation set must exist, either with `val_pattern` or `val_ratio`
     # Using a `val_pattern` means that `val_ratio` == 0 and `test_ratio` == 0
@@ -140,7 +157,7 @@ def main(config):
         if len(test_indices):
             test_data.feature_df.loc[test_indices] = normalizer.normalize(test_data.feature_df.loc[test_indices])
 
-    print('>>>>> my_data: ', my_data)
+    # print('>>>>> my_data: ', my_data)
 
     # Create model
     logger.info("Creating model ...")
@@ -187,6 +204,7 @@ def main(config):
     if config['test_only'] == 'testset':  # Only evaluate and skip training
         dataset_class, collate_fn, runner_class = pipeline_factory(config)
         test_dataset = dataset_class(test_data, test_indices)
+        print('>>>> test_data', test_data, 'test_indices: ', test_indices)
 
         test_loader = DataLoader(dataset=test_dataset,
                                  batch_size=config['batch_size'],

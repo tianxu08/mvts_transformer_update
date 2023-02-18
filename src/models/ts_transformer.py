@@ -167,7 +167,7 @@ def get_pos_encoder(pos_encoding):
 
 
 class TransformerBatchNormEncoderLayer(nn.modules.Module):
-    r"""This transformer encoder layer block is made up of self-attn and feedforward network.
+    """This transformer encoder layer block is made up of self-attn and feedforward network.
     It differs from TransformerEncoderLayer in torch/nn/modules/transformer.py in that it replaces LayerNorm
     with BatchNorm.
 
