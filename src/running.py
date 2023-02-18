@@ -277,26 +277,34 @@ class UnsupervisedRunner(BaseRunner):
 
         epoch_loss = 0  # total loss of epoch
         total_active_elements = 0  # total unmasked elements in epoch
-        for i, batch in enumerate(self.dataloader):
 
+        print('self.dataloader: ', self.dataloader)
+        for i, batch in enumerate(self.dataloader):
+            
             X, targets, target_masks, padding_masks, IDs = batch
 
-            # print('----------------------1-------------------------')
-            # print("X", X.shape, '\n',
-            #       "targets", targets.shape, '\n',
-            #       "target_masks", target_masks.shape, '\n',
-            #       "padding_masks", padding_masks.shape)
-            # print('padding_mask: ', padding_masks == False)
-            
+            print('----------------------1-------------------------')
+            print(batch)
+            print('>>>> i', i)
+            print("X", X.shape, '\n',
+                  "targets", targets.shape, '\n',
+                  "target_masks", target_masks.shape, '\n',
+                  "padding_masks", padding_masks.shape)
+            print('padding_mask: ', padding_masks == False)
+            print('target_mask: ', target_masks)
+            print("$$$ X[0]\n", X[0,:,:])
+            print("$$$ target:[0]\n", targets[0,:,:])
+            print(X[0,:,:] == targets[0,:,:])
 
             targets = targets.to(self.device)
             target_masks = target_masks.to(self.device)  # 1s: mask and predict, 0s: unaffected input (ignore)
             padding_masks = padding_masks.to(self.device)  # 0s: ignore
 
-            predictions = self.model(X.to(self.device), padding_masks)  # (batch_size, padded_length, feat_dim)
 
-            # print('prediction', predictions.shape)
-            # print('self.loss_module: ', self.loss_module)
+            predictions = self.model(X.to(self.device), padding_masks)  # (batch_size, padded_length, feat_dim)
+            
+            print('prediction', predictions.shape)
+            print('self.loss_module: ', self.loss_module)
             # Cascade noise masks (batch_size, padded_length, feat_dim) and padding masks (batch_size, padded_length)
             target_masks = target_masks * padding_masks.unsqueeze(-1)
             loss = self.loss_module(predictions, targets, target_masks)  # (num_active,) individual loss (square error per element) for each active value in batch
@@ -326,7 +334,7 @@ class UnsupervisedRunner(BaseRunner):
                 epoch_loss += batch_loss.item()  # add total loss of batch
 
             
-            # print('---------------------2--------------------------')
+            print('---------------------2--------------------------')
 
         epoch_loss = epoch_loss / total_active_elements  # average loss per element for whole epoch
         self.epoch_metrics['epoch'] = epoch_num

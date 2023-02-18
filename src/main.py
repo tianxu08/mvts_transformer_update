@@ -17,6 +17,7 @@ import sys
 import time
 import pickle
 import json
+import pprint
 
 # 3rd party packages
 from tqdm import tqdm
@@ -246,7 +247,7 @@ def main(config):
         epoch_start_time = time.time()
         aggr_metrics_train = trainer.train_epoch(epoch)  # dictionary of aggregate epoch metrics
         epoch_runtime = time.time() - epoch_start_time
-        print()
+        
         print_str = 'Epoch {} Training Summary: '.format(epoch)
         for k, v in aggr_metrics_train.items():
             tensorboard_writer.add_scalar('{}/train'.format(k), v, epoch)
@@ -307,5 +308,6 @@ if __name__ == '__main__':
 
     args = Options().parse()  # `argsparse` object
     config = setup(args)  # configuration dictionary
-    print('config: ', config)
+    # print('config: ', config)
+    pprint.pprint(config)
     main(config)
