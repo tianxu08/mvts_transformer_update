@@ -278,23 +278,23 @@ class UnsupervisedRunner(BaseRunner):
         epoch_loss = 0  # total loss of epoch
         total_active_elements = 0  # total unmasked elements in epoch
 
-        print('self.dataloader: ', self.dataloader)
+        # print('self.dataloader: ', self.dataloader)
         for i, batch in enumerate(self.dataloader):
             
             X, targets, target_masks, padding_masks, IDs = batch
 
-            print('----------------------1-------------------------')
-            print(batch)
-            print('>>>> i', i)
-            print("X", X.shape, '\n',
-                  "targets", targets.shape, '\n',
-                  "target_masks", target_masks.shape, '\n',
-                  "padding_masks", padding_masks.shape)
-            print('padding_mask: ', padding_masks == False)
-            print('target_mask: ', target_masks)
-            print("$$$ X[0]\n", X[0,:,:])
-            print("$$$ target:[0]\n", targets[0,:,:])
-            print(X[0,:,:] == targets[0,:,:])
+            # print('----------------------1-------------------------')
+            # print(batch)
+            # print('>>>> i', i)
+            # print("X", X.shape, '\n',
+            #       "targets", targets.shape, '\n',
+            #       "target_masks", target_masks.shape, '\n',
+            #       "padding_masks", padding_masks.shape)
+            # print('padding_mask: ', padding_masks == False)
+            # print('target_mask: ', target_masks)
+            # print("$$$ X[0]\n", X[0,:,:])
+            # print("$$$ target:[0]\n", targets[0,:,:])
+            # print(X[0,:,:] == targets[0,:,:])
 
             targets = targets.to(self.device)
             target_masks = target_masks.to(self.device)  # 1s: mask and predict, 0s: unaffected input (ignore)
@@ -303,8 +303,8 @@ class UnsupervisedRunner(BaseRunner):
 
             predictions = self.model(X.to(self.device), padding_masks)  # (batch_size, padded_length, feat_dim)
             
-            print('prediction', predictions.shape)
-            print('self.loss_module: ', self.loss_module)
+            # print('prediction', predictions.shape)
+            # print('self.loss_module: ', self.loss_module)
             # Cascade noise masks (batch_size, padded_length, feat_dim) and padding masks (batch_size, padded_length)
             target_masks = target_masks * padding_masks.unsqueeze(-1)
             loss = self.loss_module(predictions, targets, target_masks)  # (num_active,) individual loss (square error per element) for each active value in batch
@@ -334,7 +334,7 @@ class UnsupervisedRunner(BaseRunner):
                 epoch_loss += batch_loss.item()  # add total loss of batch
 
             
-            print('---------------------2--------------------------')
+            # print('---------------------2--------------------------')
 
         epoch_loss = epoch_loss / total_active_elements  # average loss per element for whole epoch
         self.epoch_metrics['epoch'] = epoch_num
@@ -467,32 +467,33 @@ class SupervisedRunner(BaseRunner):
 
         per_batch = {'target_masks': [], 'targets': [], 'predictions': [], 'metrics': [], 'IDs': []}
         for i, batch in enumerate(self.dataloader):
+            with torch.no_grad():
+                X, targets, padding_masks, IDs = batch
+                targets = targets.to(self.device)
+                padding_masks = padding_masks.to(self.device)  # 0s: ignore
+                # regression: (batch_size, num_labels); classification: (batch_size, num_classes) of logits
+                predictions = self.model(X.to(self.device), padding_masks)
 
-            X, targets, padding_masks, IDs = batch
-            targets = targets.to(self.device)
-            padding_masks = padding_masks.to(self.device)  # 0s: ignore
-            # regression: (batch_size, num_labels); classification: (batch_size, num_classes) of logits
-            predictions = self.model(X.to(self.device), padding_masks)
+                loss = self.loss_module(predictions, targets)  # (batch_size,) loss for each sample in the batch
+                batch_loss = torch.sum(loss).cpu().item()
+                mean_loss = batch_loss / len(loss)  # mean loss (over samples)
 
-            loss = self.loss_module(predictions, targets)  # (batch_size,) loss for each sample in the batch
-            batch_loss = torch.sum(loss).cpu().item()
-            mean_loss = batch_loss / len(loss)  # mean loss (over samples)
+                per_batch['targets'].append(targets.cpu().numpy())
+                per_batch['predictions'].append(predictions.cpu().numpy())
+                per_batch['metrics'].append([loss.cpu().numpy()])
+                per_batch['IDs'].append(IDs)
 
-            per_batch['targets'].append(targets.cpu().numpy())
-            per_batch['predictions'].append(predictions.cpu().numpy())
-            per_batch['metrics'].append([loss.cpu().numpy()])
-            per_batch['IDs'].append(IDs)
+                metrics = {"loss": mean_loss}
+                if i % self.print_interval == 0:
+                    ending = "" if epoch_num is None else 'Epoch {} '.format(epoch_num)
+                    self.print_callback(i, metrics, prefix='Evaluating ' + ending)
 
-            metrics = {"loss": mean_loss}
-            if i % self.print_interval == 0:
-                ending = "" if epoch_num is None else 'Epoch {} '.format(epoch_num)
-                self.print_callback(i, metrics, prefix='Evaluating ' + ending)
-
-            total_samples += len(loss)
-            epoch_loss += batch_loss  # add total loss of batch
+                total_samples += len(loss)
+                epoch_loss += batch_loss  # add total loss of batch
 
         epoch_loss = epoch_loss / total_samples  # average loss per element for whole epoch
-        self.epoch_metrics['epoch'] = epoch_num
+        if epoch_num:
+            self.epoch_metrics['epoch'] = epoch_num
         self.epoch_metrics['loss'] = epoch_loss
 
         if self.classification:

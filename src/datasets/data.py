@@ -246,26 +246,7 @@ class TSRegressionArchive(BaseData):
         # use all features
         self.feature_names = self.all_df.columns
         self.feature_df = self.all_df
-        # print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
-        # print('self.feature_df: ', self.feature_df.shape)
-        # print('self.feature_names: ', self.feature_names, self.feature_names)
-        # print('self.all_df: ', self.all_df.shape)
-        # print('self.labels_df: ', self.labels_df.shape)
-        # print('self.all_IDS: ', self.all_IDs.shape, self.all_IDs)
-
-        # print('index.unique: ', self.all_df.index.shape, self.all_df.index)
-        # print('self.all_df[0]', self.all_df.values.shape, type(self.all_df.values))
-        # print('all_df: ', 
-        #          self.all_df.values[0], '>>', 
-        #          type(self.all_df.values[0]), '>>',
-        #          self.all_df.values[0].shape, '>>', 
-        #          self.all_df.values[0][0])
-        # print('-----------------------------------------')
-        # for i in range(0, self.all_df.shape[0], 405):
-        #     print(i, '>>>>>\n', type(self.all_df.iloc[i]), '>>\n', self.all_df.iloc[i].shape, '>>\n', 
-        #         self.all_df.iloc[i].name, '>>\n',self.all_df.iloc[i])
-
-        # print('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
+        
 
     def load_all(self, root_dir, file_list=None, pattern=None):
         """
@@ -342,6 +323,7 @@ class TSRegressionArchive(BaseData):
         vert_diffs = np.abs(lengths - np.expand_dims(lengths[0, :], 0))
         if np.sum(vert_diffs) > 0:  # if any column (dimension) has varying length across samples
             self.max_seq_len = int(np.max(lengths[:, 0]))
+            self.max_seq_len = 300 # hard code for now
             logger.warning("Not all samples have same length: maximum length set to {}".format(self.max_seq_len))
         else:
             self.max_seq_len = lengths[0, 0]

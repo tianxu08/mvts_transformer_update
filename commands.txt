@@ -63,11 +63,15 @@ python src/main.py --output_dir experiments --comment "finetune for classificati
 
 
 # IMV train from scratch 1 epochs
-python src/main.py --output_dir experiments --comment "classification from Scratch" --name IMV_fromScratch --records_file Classification_records.xls --data_dir ./data/Classification/IMV/ --data_class tsra --pattern TRAIN --val_pattern TEST --epochs 500 --lr 0.001 --optimizer RAdam  --pos_encoding learnable  --task classification  --key_metric accuracy
+python src/main.py --output_dir experiments --comment "IMV classification from Scratch" --name IMV_fromScratch --records_file Classification_records.xls --data_dir ./data/Classification/IMV/ --data_class tsra --pattern TRAIN --val_pattern TEST --epochs 200 --lr 0.001 --optimizer RAdam  --pos_encoding learnable  --task classification  --key_metric accuracy
 
 # pretrain
 
 python src/main.py --output_dir experiments --comment "pretraining IMV through imputation" --name IMV_pretrained --records_file Imputation_records.xls --data_dir ./data/Classification/IMV/ --data_class tsra --pattern TRAIN --val_ratio 0.2 --epochs 500 --lr 0.001 --optimizer RAdam --batch_size 32 --pos_encoding learnable --d_model 128
 
 # finetune
-python src/main.py --output_dir experiments --comment "finetune for classification" --name IMV_finetuned --records_file Classification_records.xls --data_dir ./data/Classification/IMV/ --data_class tsra --pattern TRAIN --val_pattern TEST --epochs 500 --lr 0.001 --optimizer RAdam --pos_encoding learnable --d_model 128 --load_model /home/xu/dev/research/mvts_transformer/experiments/IMV_pretrained_2023-02-06_18-18-14_QhG/checkpoints/model_best.pth --task classification --change_output --batch_size 128 --key_metric accuracy
+python src/main.py --output_dir experiments --comment "IMV finetune for classification" --name IMV_finetuned --records_file Classification_records.xls --data_dir ./data/Classification/IMV/ --data_class tsra --pattern TRAIN --val_pattern TEST --epochs 500 --lr 0.001 --optimizer RAdam --pos_encoding learnable --d_model 128 --load_model /home/xu/dev/research/mvts_transformer/experiments/IMV_pretrained_2023-02-18_15-32-31_auX/checkpoints/model_best.pth --task classification --change_output --batch_size 128 --key_metric accuracy
+
+
+# load for TEST
+python src/main.py --output_dir experiments --comment "IMV classification from Scratch" --name IMV_fromScratch --records_file Classification_records.xls --data_dir ./data/Classification/IMV/ --data_class tsra --pattern TRAIN --val_pattern TEST --epochs 1 --lr 0.001 --optimizer RAdam  --pos_encoding learnable  --task classification  --key_metric accuracy --load_model /home/xu/dev/research/mvts_transformer/experiments/IMV_fromScratch_2023-02-18_15-55-49_snI/checkpoints/model_best.pth
